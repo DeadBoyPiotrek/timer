@@ -1,24 +1,29 @@
 const STORAGE_KEY = 'focus-minutes';
 const SESSIONS_KEY = 'focus-sessions';
+const SOUND_KEY = 'focus-sound';
 const TICKS = 60;
 const CELLS = 20;
 
-const FACE = [
+const FACE_OUTLINE = [
   '....#####....',
   '..##.....##..',
   '.#.........#.',
   '.#.........#.',
-  '#...#...#...#',
-  '#...#...#...#',
   '#...........#',
   '#...........#',
   '#...........#',
-  '.#..#####..#.',
+  '#...........#',
+  '#...........#',
+  '.#.........#.',
   '.#.........#.',
   '..##.....##..',
   '....#####....',
 ];
-const SMILE_CORNERS = ['', '', '', '', '', '', '', '', '...#.....#...'];
+const MOODS = {
+  sleepy: ['', '', '', '', '', '...#.#.#.#...', '....#...#....', '', '', '.....###.....'],
+  focused: ['', '', '', '', '....#...#....', '....#...#....', '', '', '....#...#....', '.....###.....'],
+  happy: ['', '', '', '', '....#...#....', '...#.#.#.#...', '', '', '...#######...', '....#...#....', '.....###.....'],
+};
 const HEART_OUTLINE = [
   '.##...##.',
   '#..#.#..#',
@@ -42,6 +47,7 @@ const HEART_FILL = [
 const input = document.querySelector<HTMLInputElement>('#time')!;
 const toggle = document.querySelector<HTMLButtonElement>('#toggle')!;
 const reset = document.querySelector<HTMLButtonElement>('#reset')!;
+const soundToggle = document.querySelector<HTMLButtonElement>('#sound')!;
 const statusLabel = document.querySelector<HTMLElement>('#status')!;
 const ticksGroup = document.querySelector<SVGGElement>('#ticks')!;
 const bar = document.querySelector<HTMLElement>('#bar')!;
@@ -52,6 +58,7 @@ let duration = Number(localStorage.getItem(STORAGE_KEY) ?? 60) * 60_000;
 let remaining = duration;
 let endAt: number | null = null;
 let done = false;
+let soundOn = localStorage.getItem(SOUND_KEY) === 'on';
 let interval = 0;
 let audio: AudioContext | null = null;
 let alarm: OscillatorNode[] = [];
@@ -70,8 +77,12 @@ function tickLine(i: number) {
 
 ticksGroup.innerHTML = Array.from({ length: TICKS }, (_, i) => tickLine(i)).join('');
 bar.innerHTML = '<i></i>'.repeat(CELLS);
-faceIcon.innerHTML = `<path d="${pixels(FACE)}" /><path class="corners" d="${pixels(SMILE_CORNERS)}" />`;
-heartsBox.innerHTML = ['--purple', '--mint', '--yellow']
+faceIcon.innerHTML =
+  `<path d="${pixels(FACE_OUTLINE)}" />` +
+  Object.entries(MOODS)
+    .map(([mood, rows]) => `<path class="mood-${mood}" d="${pixels(rows)}" />`)
+    .join('');
+heartsBox.innerHTML = ['--purple', '--mint', '--yellow', '--hot']
   .map(
     (color) =>
       `<svg viewBox="0 0 9 8" style="--c: var(${color})"><path class="fill" d="${pixels(HEART_FILL)}" /><path d="${pixels(HEART_OUTLINE)}" /></svg>`,
@@ -111,7 +122,7 @@ function render(ms: number) {
   cells.forEach((cell, i) => cell.classList.toggle('on', i < Math.floor(elapsed * CELLS)));
   statusLabel.textContent = done ? 'DONE!' : running ? 'RUNNING...' : ms < duration ? 'PAUSED' : 'READY...';
   document.body.toggleAttribute('data-running', running);
-  document.body.toggleAttribute('data-smile', done || (running && elapsed >= 0.9));
+  document.body.dataset.mood = done ? 'happy' : running ? 'focused' : 'sleepy';
   input.readOnly = running;
 }
 
@@ -132,6 +143,16 @@ function scheduleAlarm(ms: number) {
     osc.stop(t + 0.3);
     return osc;
   });
+}
+
+function cancelAlarm() {
+  alarm.forEach((osc) => osc.disconnect());
+  alarm = [];
+}
+
+function renderSound() {
+  document.body.toggleAttribute('data-sound', soundOn);
+  soundToggle.setAttribute('aria-pressed', String(soundOn));
 }
 
 function halt() {
@@ -159,15 +180,14 @@ function start() {
   done = false;
   renderHearts();
   endAt = Date.now() + remaining;
-  scheduleAlarm(remaining);
+  if (soundOn) scheduleAlarm(remaining);
   interval = setInterval(tick, 250);
   tick();
 }
 
 function stop(nextRemaining: number) {
   halt();
-  alarm.forEach((osc) => osc.disconnect());
-  alarm = [];
+  cancelAlarm();
   done = false;
   remaining = nextRemaining;
   render(remaining);
@@ -212,5 +232,15 @@ toggle.addEventListener('click', () => {
 
 reset.addEventListener('click', () => stop(duration));
 
+soundToggle.addEventListener('click', () => {
+  soundOn = !soundOn;
+  localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off');
+  renderSound();
+  if (endAt === null) return;
+  if (soundOn) scheduleAlarm(endAt - Date.now());
+  else cancelAlarm();
+});
+
+renderSound();
 renderHearts();
 render(remaining);

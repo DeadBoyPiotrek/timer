@@ -29,7 +29,13 @@
         <header class="titlebar">
           <span class="dots"><i></i><i></i><i></i></span>
           <span class="name">Timer.exe</span>
-          <svg class="expand" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2h5v5M14 2 8 8M7 14H2V9M2 14l6-6" /></svg>
+          <button id="sound" class="sound" aria-label="Sound" aria-pressed="false">
+            <svg viewBox="0 0 24 24">
+              <path class="speaker" d="M3 9h4l5-4v14l-5-4H3z" />
+              <path class="sound-on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+              <path class="sound-off" d="M16 9l6 6M22 9l-6 6" />
+            </svg>
+          </button>
         </header>
         <div class="content">
           <div class="dial">

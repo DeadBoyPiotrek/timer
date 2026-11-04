@@ -132,12 +132,36 @@ body[data-running] .arrows span {
   background: var(--paper);
 }
 
-.expand {
-  width: 14px;
-  height: 14px;
+.titlebar .sound {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.titlebar .sound:active {
+  translate: none;
+}
+
+.titlebar .sound svg {
+  width: 20px;
+  height: 20px;
   fill: none;
   stroke: var(--ink);
-  stroke-width: 2.5;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.titlebar .sound .speaker {
+  fill: var(--ink);
+  stroke: none;
+}
+
+body[data-sound] .sound-off,
+body:not([data-sound]) .sound-on {
+  display: none;
 }
 
 .stack {
@@ -304,12 +328,10 @@ body:not([data-running]) .icon-pause {
   shape-rendering: crispEdges;
 }
 
-#face .corners {
-  visibility: hidden;
-}
-
-body[data-smile] #face .corners {
-  visibility: visible;
+body:not([data-mood="sleepy"]) .mood-sleepy,
+body:not([data-mood="focused"]) .mood-focused,
+body:not([data-mood="happy"]) .mood-happy {
+  display: none;
 }
 
 .today {
@@ -361,8 +383,7 @@ body[data-smile] #face .corners {
   .top,
   .side,
   .kanji,
-  .ghost,
-  .expand {
+  .ghost {
     display: none;
   }
 
