@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus timer</title>
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b73;
+    --line: #e4e4e8;
+    --accent: #4f6bed;
+    --accent-soft: #eef1fd;
+    --code-bg: #f0f0f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171b;
+      --card: #1f2026;
+      --text: #e8e8ec;
+      --muted: #9a9aa6;
+      --line: #2e2f37;
+      --accent: #a8b8ff;
+      --accent-soft: #262a3d;
+      --code-bg: #2a2b33;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171b;
+    --card: #1f2026;
+    --text: #e8e8ec;
+    --muted: #9a9aa6;
+    --line: #2e2f37;
+    --accent: #a8b8ff;
+    --accent-soft: #262a3d;
+    --code-bg: #2a2b33;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 16px 80px;
+  }
+  header { margin-bottom: 32px; }
+  header p { color: var(--muted); margin: 4px 0 0; }
+  h1 { font-size: 2rem; margin: 0; letter-spacing: -0.02em; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  h3 { font-size: 1rem; margin: 20px 0 8px; }
+  p { margin: 0 0 10px; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { margin: 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code {
+    font: 0.88em/1.4 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 5px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .ref { display: block; font-size: 0.9em; margin-top: 2px; }
+  dl { margin: 0; }
+  dt { font-weight: 600; margin-top: 14px; }
+  dt:first-child { margin-top: 0; }
+  dd { margin: 2px 0 0; color: var(--muted); }
+  .rejected li strong { color: var(--text); }
+  .rejected li { color: var(--muted); }
+  .open { background: var(--accent-soft); border-color: transparent; }
+  .files li { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.9em; }
+  .files .new { color: var(--muted); font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Focus timer</h1>
+    <p>Minimalistyczny timer w małym oknie bez paska przeglądarki</p>
+  </header>
+
+  <section>
+    <h2>Zgłoszenie</h2>
+    <p>Minimalistyczny timer do skupienia w małym oknie bez paska przeglądarki. Wygląda jak kafelek minutnika Google: ciemna karta, okrąg z postępem, czas na środku, dwa przyciski pod spodem. Czas wpisujesz ręcznie. Ostatnio wpisany czas jest pamiętany przy następnym uruchomieniu.</p>
+    <p>Okno zachowuje się jak każde inne okno na pulpicie. Inne okna mogą je przykryć.</p>
+  </section>
+
+  <section>
+    <h2>Jak to działa dziś</h2>
+    <ol>
+      <li>Repo to pusty szablon Node. Skrypt <code>build</code> uruchamia tylko <code>tsc</code>.
+        <a class="ref" href="../../package.json">package.json:6</a></li>
+      <li>Kompilacja celuje w CommonJS bez typów przeglądarki.
+        <a class="ref" href="../../tsconfig.json">tsconfig.json:4</a></li>
+      <li>Plik wejściowy wypisuje jedną linię w konsoli.
+        <a class="ref" href="../../src/index.ts">src/index.ts:1</a></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Przyczyna</h2>
+    <p>Projekt jest ustawiony pod Node, a timer ma działać w przeglądarce. Trzeba przestawić go na stronę statyczną.</p>
+  </section>
+
+  <section>
+    <h2>Pojęcia</h2>
+    <dl>
+      <dt>Vite</dt>
+      <dd>Serwer deweloperski i bundler. Bierze <code>index.html</code> z katalogu głównego i buduje statyczny folder <code>dist</code>.</dd>
+      <dt>PWA</dt>
+      <dd>Strona z plikiem manifestu, którą Chrome pozwala zainstalować jako aplikację. Uruchamia się we własnym oknie bez paska adresu.</dd>
+      <dt>Window Controls Overlay</dt>
+      <dd>Opcja manifestu <code>display_override</code>. Usuwa pasek tytułu okna i zostawia tylko systemowe przyciski. Zmienne CSS <code>env(titlebar-area-*)</code> mówią, gdzie te przyciski leżą.</dd>
+      <dt>app-region: drag</dt>
+      <dd>Właściwość CSS, która pozwala przeciągać okno, łapiąc za wskazany element. Przyciski i pole czasu dostają <code>no-drag</code>, żeby dało się w nie klikać.</dd>
+      <dt>Liczenie od momentu końca</dt>
+      <dd>Zapisuję <code>endAt = Date.now() + czas</code>. Wyświetlam <code>endAt - Date.now()</code>. Przeglądarka spowalnia timery w tle, a ta metoda i tak pokazuje dokładny czas.</dd>
+      <dt>localStorage</dt>
+      <dd>Pamięć przeglądarki dla danej strony. Przetrwa zamknięcie okna.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Rozwiązanie</h2>
+    <p>Jedna strona w Vite i czystym TypeScripcie. Ciemna karta wypełnia całe okno. Na środku okrąg w SVG z paskiem postępu i czas. Kliknięcie w czas pozwala wpisać minuty. Enter uruchamia odliczanie. Pod spodem przyciski start lub pauza oraz reset.</p>
+    <p>Wpisane minuty trafiają do <code>localStorage</code>. Tytuł okna pokazuje pozostały czas, więc widać go na pasku zadań. Na koniec gra krótki dźwięk generowany przez Web Audio API.</p>
+    <h3>Odrzucone opcje</h3>
+    <ul class="rejected">
+      <li><strong>React lub Next.js.</strong> Jeden ekran nie potrzebuje frameworka.</li>
+      <li><strong>Plik mp3 na koniec.</strong> Web Audio daje dźwięk bez dodatkowego zasobu.</li>
+      <li><strong>Picture-in-Picture.</strong> Okno nie ma być zawsze na wierzchu.</li>
+      <li><strong>Service worker.</strong> Chrome nie wymaga go już do instalacji PWA.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Zadania</h2>
+    <ol>
+      <li>Przestawić skrypty na <code>vite</code>, <code>vite build</code> i <code>vite preview</code>.</li>
+      <li>Przestawić tsconfig na ESNext z typami DOM i bez emitowania plików.</li>
+      <li>Dodać <code>index.html</code> z kartą, okręgiem, polem czasu i dwoma przyciskami.</li>
+      <li>Napisać logikę timera z wpisywaniem minut, startem, pauzą, resetem i zapisem minut.</li>
+      <li>Dodać style karty z obsługą Window Controls Overlay i przeciągania okna.</li>
+      <li>Dodać manifest i ikonę SVG.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Jak sprawdzić</h2>
+    <ol>
+      <li>Uruchamiasz <code>npm run dev</code> i otwierasz adres w Chrome.</li>
+      <li>Klikasz w czas, wpisujesz <code>1</code> i wciskasz Enter. Po minucie gra dźwięk.</li>
+      <li>Zamykasz kartę i otwierasz ją ponownie. Pole pokazuje <code>1:00</code>.</li>
+      <li>Instalujesz stronę ikonką w pasku adresu. Okno ma tylko kartę i przyciski systemowe.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Pliki</h2>
+    <ul class="files">
+      <li><a href="../../package.json">package.json:6</a></li>
+      <li><a href="../../tsconfig.json">tsconfig.json:3</a></li>
+      <li><a href="../../src/index.ts">src/index.ts:1</a></li>
+      <li>index.html <span class="new">jako nowy plik</span></li>
+      <li>src/style.css <span class="new">jako nowy plik</span></li>
+      <li>public/manifest.webmanifest <span class="new">jako nowy plik</span></li>
+      <li>public/icon.svg <span class="new">jako nowy plik</span></li>
+    </ul>
+  </section>
+
+  <section class="open">
+    <h2>Do ustalenia</h2>
+    <ul>
+      <li>Vite instalujesz sam poleceniem <code>npm i -D vite</code>. Wygeneruje to plik <code>package-lock.json</code>.</li>
+      <li>Repo nie ma gałęzi <code>develop</code> ani żadnego commita. Pracujemy na <code>main</code>, czy tworzę <code>develop</code> i z niej <code>feature/&lt;TICKET&gt;/focus-timer</code>?</li>
+      <li>Hosting na Cloudflare Pages lub GitHub Pages robimy osobnym krokiem po działającej wersji lokalnej.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

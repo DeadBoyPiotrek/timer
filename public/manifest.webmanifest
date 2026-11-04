@@ -1,0 +1,10 @@
+{
+  "name": "Timer",
+  "short_name": "Timer",
+  "start_url": ".",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "background_color": "#f5b8ea",
+  "theme_color": "#4ee6c8",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

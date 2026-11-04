@@ -1,0 +1,396 @@
+:root {
+  --pink: #f5b8ea;
+  --hot: #ff6fd2;
+  --mint: #4ee6c8;
+  --purple: #a77bf3;
+  --yellow: #f3e34f;
+  --ink: #111;
+  --paper: #fff;
+  --grey: #d9d9d9;
+  --pixel: "Silkscreen", monospace;
+  --sans: "Space Grotesk", system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: var(--pink);
+  background-image: radial-gradient(rgb(255 255 255 / 0.6) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.desktop {
+  box-sizing: border-box;
+  min-height: 100%;
+  display: grid;
+  grid-template-areas:
+    "kanji top side"
+    "kanji stack side";
+  place-content: center;
+  gap: 20px 56px;
+  padding: calc(env(titlebar-area-height, 0px) + 24px) 24px 24px;
+}
+
+.top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status {
+  margin: 0;
+  font: 400 15px/1 var(--pixel);
+}
+
+body[data-running] .status {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.arrows {
+  display: flex;
+  gap: 4px;
+  padding-right: 8px;
+}
+
+.arrows span {
+  width: 12px;
+  height: 12px;
+  border: solid var(--mint);
+  border-width: 5px 5px 0 0;
+  transform: rotate(45deg);
+}
+
+body[data-running] .arrows span {
+  animation: flow 1.2s infinite;
+  animation-delay: calc(var(--i) * 0.15s);
+}
+
+@keyframes flow {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.window {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 10px;
+  background: var(--mint);
+  border-bottom: 3px solid var(--ink);
+  font: 700 13px/1 var(--sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.titlebar.yellow {
+  background: var(--yellow);
+}
+
+.titlebar .name {
+  flex: 1;
+  text-align: center;
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dots i {
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.expand {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+.stack {
+  grid-area: stack;
+  position: relative;
+  margin: 28px 0 0 28px;
+}
+
+.ghost {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--mint) 0 30px, var(--ink) 30px 33px, transparent 33px);
+}
+
+.ghost-1 {
+  translate: -14px -14px;
+}
+
+.ghost-2 {
+  translate: -28px -28px;
+}
+
+.main {
+  position: relative;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.dial {
+  position: relative;
+  aspect-ratio: 1;
+  container-type: size;
+}
+
+.dial svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dial line {
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  transition: stroke 0.3s;
+}
+
+.dial line.on {
+  stroke: var(--c);
+}
+
+.time {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 76%;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  caret-color: var(--purple);
+  font-family: var(--pixel);
+  font-size: 15cqmin;
+  line-height: 1;
+  text-align: center;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.time::selection {
+  background: var(--yellow);
+}
+
+.time:read-only {
+  cursor: default;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 3px;
+  padding: 4px;
+  border: 3px solid var(--ink);
+}
+
+.bar i {
+  height: 12px;
+  background: var(--grey);
+}
+
+.bar i.on {
+  background: var(--hot);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+button {
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+#reset {
+  background: var(--purple);
+}
+
+button:hover {
+  filter: brightness(1.06);
+}
+
+button:active {
+  translate: 3px 3px;
+  box-shadow: none;
+}
+
+button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+body[data-running] .icon-play,
+body:not([data-running]) .icon-pause {
+  display: none;
+}
+
+.side {
+  grid-area: side;
+  align-self: center;
+  display: grid;
+  gap: 32px;
+  justify-items: center;
+}
+
+.mood {
+  width: 160px;
+}
+
+#face {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 22px;
+  fill: var(--ink);
+  shape-rendering: crispEdges;
+}
+
+#face .corners {
+  visibility: hidden;
+}
+
+body[data-smile] #face .corners {
+  visibility: visible;
+}
+
+.today {
+  text-align: center;
+}
+
+.today p {
+  margin: 8px 0 0;
+  font: 400 12px/1 var(--pixel);
+}
+
+.hearts {
+  display: flex;
+  gap: 8px;
+}
+
+.hearts svg {
+  width: 36px;
+  shape-rendering: crispEdges;
+  fill: var(--ink);
+}
+
+.hearts .fill {
+  fill: var(--paper);
+}
+
+.hearts .full .fill {
+  fill: var(--c);
+}
+
+.kanji {
+  grid-area: kanji;
+  align-self: center;
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+}
+
+@media (max-width: 800px), (max-height: 660px) {
+  .desktop {
+    display: block;
+    height: 100%;
+    padding: 0;
+  }
+
+  .top,
+  .side,
+  .kanji,
+  .ghost,
+  .expand {
+    display: none;
+  }
+
+  .stack {
+    height: 100%;
+    margin: 0;
+  }
+
+  .main {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    box-shadow: none;
+  }
+
+  .titlebar {
+    height: max(30px, env(titlebar-area-height, 0px));
+    padding-right: calc(100vw - env(titlebar-area-width, 100vw) + 10px);
+  }
+
+  .content {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: 1fr auto auto;
+  }
+
+  .dial {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+}
