@@ -67,22 +67,25 @@ function pixels(rows: string[]) {
   return rows.flatMap((row, y) => [...row].map((cell, x) => (cell === '#' ? `M${x} ${y}h1v1h-1z` : ''))).join('');
 }
 
+function gradientAt(t: number) {
+  return `color-mix(in oklch, var(--yellow), var(--violet) ${t * 100}%)`;
+}
+
 function tickLine(i: number) {
   const angle = (i / TICKS) * 2 * Math.PI;
   const sin = Math.sin(angle);
   const cos = Math.cos(angle);
-  const color = `color-mix(in oklch, var(--mint), var(--purple) ${(i / (TICKS - 1)) * 100}%)`;
-  return `<line x1="${50 + 40 * sin}" y1="${50 - 40 * cos}" x2="${50 + 47 * sin}" y2="${50 - 47 * cos}" style="--c: ${color}" />`;
+  return `<line x1="${50 + 40 * sin}" y1="${50 - 40 * cos}" x2="${50 + 47 * sin}" y2="${50 - 47 * cos}" style="--c: ${gradientAt(i / (TICKS - 1))}" />`;
 }
 
 ticksGroup.innerHTML = Array.from({ length: TICKS }, (_, i) => tickLine(i)).join('');
-bar.innerHTML = '<i></i>'.repeat(CELLS);
+bar.innerHTML = Array.from({ length: CELLS }, (_, i) => `<i style="--c: ${gradientAt(i / (CELLS - 1))}"></i>`).join('');
 faceIcon.innerHTML =
   `<path d="${pixels(FACE_OUTLINE)}" />` +
   Object.entries(MOODS)
     .map(([mood, rows]) => `<path class="mood-${mood}" d="${pixels(rows)}" />`)
     .join('');
-heartsBox.innerHTML = ['--purple', '--mint', '--yellow', '--hot']
+heartsBox.innerHTML = ['--yellow', '--orange', '--pink', '--violet']
   .map(
     (color) =>
       `<svg viewBox="0 0 9 8" style="--c: var(${color})"><path class="fill" d="${pixels(HEART_FILL)}" /><path d="${pixels(HEART_OUTLINE)}" /></svg>`,
